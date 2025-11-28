@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="w-full h-full flex items-center justify-center p-8" style="background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%); min-height: 100vh;">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+<div class="w-full h-full flex items-center justify-center p-8 bg-gray-900 min-h-screen">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg p-8 w-full max-w-md">
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold mb-2" style="color: #dc2626;">Kuya Benz</h1>
+            <h1 class="text-3xl font-bold mb-2 text-gray-800">Kuya Benz</h1>
             <p class="text-gray-600">Delicious Filipino Cuisine</p>
         </div>
         
@@ -14,24 +14,23 @@
             </div>
         @endif
 
-        <h2 class="text-2xl font-bold mb-6 text-center" style="color: #1f2937;">Sign In</h2>
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Sign In</h2>
         
         <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
             <div>
-                <label for="username" class="block text-sm font-medium mb-2" style="color: #1f2937;">Username</label>
+                <label for="username" class="block text-sm font-medium mb-2 text-gray-700">Username</label>
                 <input type="text" id="username" name="username" required 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none">
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none text-gray-800">
             </div>
             
             <div>
-                <label for="password" class="block text-sm font-medium mb-2" style="color: #1f2937;">Password</label>
+                <label for="password" class="block text-sm font-medium mb-2 text-gray-700">Password</label>
                 <input type="password" id="password" name="password" required 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none">
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none text-gray-800">
             </div>
             
-            <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold" 
-                    style="background-color: #dc2626;">
+            <button type="submit" class="w-full bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition">
                 Sign In
             </button>
         </form>

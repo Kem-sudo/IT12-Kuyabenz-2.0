@@ -46,4 +46,5 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
+
 Route::redirect('/', '/login');

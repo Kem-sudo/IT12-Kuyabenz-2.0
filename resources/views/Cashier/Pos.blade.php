@@ -57,16 +57,16 @@
 </head>
 <body>
     <div class="w-full h-full flex" style="min-height: 100vh;">
-        <div class="flex-1" style="background-color: #f3f4f6;">
-            <nav class="text-white p-4 shadow-lg" style="background-color: #dc2626;">
+        <div class="flex-1 bg-gray-50">
+            <nav class="text-white p-4 shadow-lg bg-gray-800">
                 <div class="flex justify-between items-center">
                     <div>
                         <h1 class="text-2xl font-bold">Kuya Benz</h1>
-                        <p class="text-sm opacity-90">Cashier: {{ auth()->user()->username }}</p>
+                        <p class="text-sm text-gray-300">Cashier: {{ auth()->user()->username }}</p>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="px-6 py-2 bg-white rounded-lg font-semibold" style="color: #dc2626;">
+                        <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg font-semibold hover:bg-gray-600 transition">
                             Logout
                         </button>
                     </form>
@@ -86,24 +86,24 @@
                     <!-- Categories will be loaded here -->
                 </div>
                 
-                <<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="menu-items-container">
-    <!-- This will be populated by JavaScript -->
-</div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="menu-items-container">
+                    <!-- This will be populated by JavaScript -->
+                </div>
             </div>
         </div>
         
-        <div class="w-96 bg-white shadow-2xl flex flex-col" style="height: 100vh;">
-            <div class="p-6 border-b" style="background-color: #ffffff;">
-                <h2 class="text-2xl font-bold mb-4" style="color: #1f2937;">Current Order</h2>
+        <div class="w-96 bg-white border-l border-gray-200 flex flex-col" style="height: 100vh;">
+            <div class="p-6 border-b border-gray-200 bg-white">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Current Order</h2>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" style="color: #1f2937;">Order Type</label>
+                    <label class="block text-sm font-medium mb-2 text-gray-700">Order Type</label>
                     <div class="flex gap-2">
-                        <button onclick="selectOrderType('Dine In')" id="btnDineIn" class="flex-1 py-2 rounded-lg font-semibold text-sm text-white" style="background-color: #dc2626;">
-                            🍽️ Dine In
+                        <button onclick="selectOrderType('Dine In')" id="btnDineIn" class="flex-1 py-2 rounded-lg font-semibold text-sm text-white bg-gray-800">
+                            Dine In
                         </button>
-                        <button onclick="selectOrderType('Take Out')" id="btnTakeOut" class="flex-1 py-2 rounded-lg font-semibold text-sm bg-gray-200" style="color: #1f2937;">
-                            🥡 Take Out
+                        <button onclick="selectOrderType('Take Out')" id="btnTakeOut" class="flex-1 py-2 rounded-lg font-semibold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300">
+                            Take Out
                         </button>
                     </div>
                 </div>
@@ -113,30 +113,30 @@
                 <p class="text-center text-gray-500 py-8">No items in order</p>
             </div>
             
-            <div class="p-6 border-t" style="background-color: #ffffff;">
+            <div class="p-6 border-t border-gray-200 bg-white">
                 <div class="flex justify-between items-center mb-4 text-2xl font-bold">
-                    <span style="color: #1f2937;">Total:</span>
-                    <span style="color: #dc2626;" id="order-total">₱0.00</span>
+                    <span class="text-gray-800">Total:</span>
+                    <span class="text-gray-800" id="order-total">₱0.00</span>
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" style="color: #1f2937;">Payment Method</label>
-                    <div class="w-full px-4 py-3 bg-gray-100 rounded-lg text-lg font-semibold text-center" style="color: #1f2937;">
-                        💵 Cash
+                    <label class="block text-sm font-medium mb-2 text-gray-700">Payment Method</label>
+                    <div class="w-full px-4 py-3 bg-gray-100 rounded-lg text-lg font-semibold text-center text-gray-800">
+                        Cash
                     </div>
                     <input type="hidden" id="payment-method" value="Cash">
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" style="color: #1f2937;">Cash Payment Amount</label>
+                    <label class="block text-sm font-medium mb-2 text-gray-700">Cash Payment Amount</label>
                     <input type="number" id="payment-amount" step="0.01" min="0" placeholder="Enter cash amount" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg" oninput="calculateChange()">
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" oninput="calculateChange()">
                 </div>
                 
                 <div id="change-display" class="mb-4 p-4 bg-gray-100 rounded-lg hidden">
                     <div class="flex justify-between items-center">
-                        <span class="font-medium" style="color: #1f2937;">Change:</span>
-                        <span class="text-2xl font-bold" style="color: #10b981;" id="change-amount">₱0.00</span>
+                        <span class="font-medium text-gray-800">Change:</span>
+                        <span class="text-2xl font-bold text-green-600" id="change-amount">₱0.00</span>
                     </div>
                 </div>
                 
@@ -147,8 +147,8 @@
                     <input type="hidden" name="order_type" id="order-type-input" value="Dine In">
                     
                     <button type="button" onclick="submitOrder()" id="process-order-btn" 
-                            class="w-full text-white py-4 rounded-lg font-bold text-lg opacity-50 cursor-not-allowed" 
-                            style="background-color: #dc2626;" disabled>
+                            class="w-full bg-gray-800 text-white py-4 rounded-lg font-bold text-lg opacity-50 cursor-not-allowed hover:bg-gray-700 transition" 
+                            disabled>
                         Process Payment
                     </button>
                 </form>
@@ -170,39 +170,55 @@
             
             container.innerHTML = categories.map(cat => `
                 <button onclick="selectCategory('${cat}')" 
-                        class="px-4 py-2 rounded-lg font-semibold whitespace-nowrap ${selectedCategory === cat ? 'text-white' : 'bg-white'}" 
-                        style="background-color: ${selectedCategory === cat ? '#dc2626' : 'white'}; color: ${selectedCategory === cat ? 'white' : '#1f2937'};">
+                        class="px-4 py-2 rounded-lg font-semibold whitespace-nowrap ${selectedCategory === cat ? 'text-white bg-gray-800' : 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-100'}">
                     ${cat === 'all' ? 'All Items' : cat}
                 </button>
             `).join('');
         }
 
-         function renderMenuItems() {
-        const filteredItems = selectedCategory === 'all' 
-            ? menuItems 
-            : menuItems.filter(item => item.category === selectedCategory);
+        function renderMenuItems() {
+    const filteredItems = selectedCategory === 'all' 
+        ? menuItems 
+        : menuItems.filter(item => item.category === selectedCategory);
+    
+    const container = document.getElementById('menu-items-container');
+    
+    if (filteredItems.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center text-gray-500 py-8">
+                <p>No items available in this category</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = filteredItems.map(item => {
+        // DEBUG: Log each item's image info
+        console.log('Menu Item:', {
+            name: item.name,
+            image: item.image,
+            image_url: item.image_url,
+            has_image: !!item.image,
+            has_image_url: !!item.image_url
+        });
+
+        // Use image_url from model, fallback to constructed URL
+        let imageUrl = item.image_url || '/images/default-food.png';
         
-        const container = document.getElementById('menu-items-container');
-        
-        if (filteredItems.length === 0) {
-            container.innerHTML = `
-                <div class="col-span-full text-center text-gray-500 py-8">
-                    <div class="text-4xl mb-2">🍽️</div>
-                    <p>No items available in this category</p>
-                </div>
-            `;
-            return;
+        // If image_url is default but we have an image path, try to construct URL
+        if (imageUrl.includes('default-food.png') && item.image) {
+            imageUrl = '/storage/' + item.image;
         }
 
-        container.innerHTML = filteredItems.map(item => `
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition cursor-pointer ${item.stock === 0 ? 'opacity-50' : ''}" 
+        return `
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition cursor-pointer relative ${item.stock === 0 ? 'opacity-50' : ''}" 
                  onclick="${item.stock === 0 ? '' : `addToOrder(${item.id})`}">
                 <!-- Item Image -->
                 <div class="h-24 bg-gray-200 rounded-t-lg overflow-hidden">
-                    <img src="${item.image_url || '/images/default-food.png'}" 
+                    <img src="${imageUrl}" 
                          alt="${item.name}" 
                          class="w-full h-full object-cover"
-                         onerror="this.src='/images/default-food.png'">
+                         onerror="handleImageError(this, '${item.image}', '${item.image_url}')">
                 </div>
                 
                 <!-- Item Details -->
@@ -210,7 +226,7 @@
                     <h3 class="font-semibold text-gray-800 text-sm mb-1">${item.name}</h3>
                     <p class="text-xs text-gray-600 mb-2">${item.category}</p>
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-green-600 text-sm">₱${parseFloat(item.price).toFixed(2)}</span>
+                        <span class="font-bold text-gray-800 text-sm">₱${parseFloat(item.price).toFixed(2)}</span>
                         <span class="text-xs ${item.stock < 10 ? 'text-red-600 font-semibold' : 'text-gray-500'}">
                             Stock: ${item.stock}
                         </span>
@@ -222,8 +238,39 @@
                     ''
                 }
             </div>
-        `).join('');
+        `;
+    }).join('');
+}
+
+function handleImageError(img, imagePath, imageUrl) {
+    console.error('IMAGE LOAD ERROR:', {
+        currentSrc: img.src,
+        imagePath: imagePath,
+        imageUrl: imageUrl,
+        itemName: img.alt
+    });
+
+    // Try different URL formats
+    if (imagePath) {
+        // Try without storage prefix
+        if (img.src.includes('/storage/')) {
+            img.src = img.src.replace('/storage/', '/');
+        } 
+        // Try with storage prefix
+        else if (!img.src.includes('/storage/')) {
+            img.src = '/storage/' + imagePath;
+        }
+    } else {
+        // Final fallback
+        img.src = '/images/default-food.png';
     }
+    
+    // Prevent infinite loop
+    img.onerror = function() {
+        this.src = '/images/default-food.png';
+        this.onerror = null;
+    };
+}
 
         function selectCategory(category) {
             selectedCategory = category;
@@ -239,15 +286,11 @@
             const btnTakeOut = document.getElementById('btnTakeOut');
             
             if (type === 'Dine In') {
-                btnDineIn.style.backgroundColor = '#dc2626';
-                btnDineIn.style.color = 'white';
-                btnTakeOut.style.backgroundColor = '#e5e7eb';
-                btnTakeOut.style.color = '#1f2937';
+                btnDineIn.className = 'flex-1 py-2 rounded-lg font-semibold text-sm text-white bg-gray-800';
+                btnTakeOut.className = 'flex-1 py-2 rounded-lg font-semibold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300';
             } else {
-                btnTakeOut.style.backgroundColor = '#dc2626';
-                btnTakeOut.style.color = 'white';
-                btnDineIn.style.backgroundColor = '#e5e7eb';
-                btnDineIn.style.color = '#1f2937';
+                btnTakeOut.className = 'flex-1 py-2 rounded-lg font-semibold text-sm text-white bg-gray-800';
+                btnDineIn.className = 'flex-1 py-2 rounded-lg font-semibold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300';
             }
         }
 
@@ -321,16 +364,16 @@
             container.innerHTML = currentOrder.map((item, index) => `
                 <div class="order-item p-3 border border-gray-200 rounded-lg mb-3 bg-white shadow-sm">
                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-semibold flex-1" style="color: #1f2937;">${item.name}</h4>
+                        <h4 class="font-semibold flex-1 text-gray-800">${item.name}</h4>
                         <button onclick="removeFromOrder(${index})" class="text-red-600 hover:text-red-800 font-bold ml-2 text-lg">✕</button>
                     </div>
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-2">
-                            <button onclick="decreaseQuantity(${index})" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white hover:bg-orange-600 transition" style="background-color: #f59e0b;">-</button>
-                            <span class="font-semibold w-8 text-center">${item.quantity}</span>
-                            <button onclick="increaseQuantity(${index})" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white hover:bg-orange-600 transition" style="background-color: #f59e0b;">+</button>
+                            <button onclick="decreaseQuantity(${index})" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white bg-gray-600 hover:bg-gray-700 transition">-</button>
+                            <span class="font-semibold w-8 text-center text-gray-800">${item.quantity}</span>
+                            <button onclick="increaseQuantity(${index})" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white bg-gray-600 hover:bg-gray-700 transition">+</button>
                         </div>
-                        <span class="font-bold" style="color: #dc2626;">₱${(item.price * item.quantity).toFixed(2)}</span>
+                        <span class="font-bold text-gray-800">₱${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                 </div>
             `).join('');

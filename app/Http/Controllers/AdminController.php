@@ -42,29 +42,35 @@ class AdminController extends Controller
     }
 
     public function transactionMonitor()
-    {
-        $orders = Order::with(['user', 'orderItems.menuItem'])->get();
-        
-        $recentOrders = $orders->filter(function($order) {
-            return $order->created_at >= now()->subDay();
-        })->sortByDesc('created_at');
+{
+    // Get ALL recent orders (last 24 hours) with relationships
+    $recentOrders = Order::with(['user', 'orderItems.menuItem'])
+                        ->where('created_at', '>=', now()->subDay())
+                        ->orderBy('created_at', 'desc')
+                        ->get();
 
-        $activeOrders = $orders->whereIn('status', ['pending', 'preparing'])->count();
-        
-        // Fix completed today calculation
-        $completedToday = Order::where('status', 'completed')
-                              ->whereDate('created_at', today())
-                              ->count();
-                              
-        // Fix today sales calculation
-        $todaySales = Order::where('status', 'completed')
-                          ->whereDate('created_at', today())
-                          ->sum('total');
+    // Get active orders count (pending + preparing)
+    $activeOrders = Order::whereIn('status', ['pending', 'preparing'])->count();
+    
+    // FIX: Count ALL orders today (like dashboard), not just completed
+    $completedToday = Order::whereDate('created_at', today())->count();
+                          
+    // FIX: Calculate today's sales from ALL orders, not just completed
+    $todaySales = Order::whereDate('created_at', today())->sum('total');
 
-        return view('admin.transaction-monitor', compact(
-            'recentOrders', 'activeOrders', 'completedToday', 'todaySales'
-        ));
-    }
+    // DEBUG: Log the values to check
+    \Log::info('Transaction Monitor Data:', [
+        'recent_orders_count' => $recentOrders->count(),
+        'active_orders' => $activeOrders,
+        'completed_today' => $completedToday,
+        'today_sales' => $todaySales,
+        'today_date' => today()->format('Y-m-d')
+    ]);
+
+    return view('admin.transaction-monitor', compact(
+        'recentOrders', 'activeOrders', 'completedToday', 'todaySales'
+    ));
+}
 
     public function salesReport(Request $request)
     {

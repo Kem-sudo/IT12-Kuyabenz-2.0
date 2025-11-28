@@ -5,27 +5,22 @@
 
 <nav class="flex-1 p-4">
     <a href="{{ route('admin.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-white hover:bg-opacity-10">
-        <span class="text-xl">📊</span>
         <span>Dashboard</span>
     </a>
     
     <a href="{{ route('admin.transactions') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-white hover:bg-opacity-10">
-        <span class="text-xl">📡</span>
         <span>Live Monitor</span>
     </a>
     
     <a href="{{ route('admin.menu') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-white hover:bg-opacity-10">
-        <span class="text-xl">🍽️</span>
         <span>Menu</span>
     </a>
     
     <a href="{{ route('admin.sales') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-white hover:bg-opacity-10">
-        <span class="text-xl">💰</span>
         <span>Sales Report</span>
     </a>
     
     <a href="{{ route('admin.users') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-white hover:bg-opacity-10">
-        <span class="text-xl">👥</span>
         <span>Staff</span>
     </a>
 </nav>
