@@ -36,31 +36,38 @@
                 </div>
                 
                 <div class="mb-6 text-sm space-y-1">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Order #:</span>
-                        <span class="font-semibold text-gray-800">{{ $order->order_id }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Date:</span>
-                        <span class="font-semibold text-gray-800">{{ $order->created_at->format('M d, Y') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Time:</span>
-                        <span class="font-semibold text-gray-800">{{ $order->created_at->format('h:i A') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Cashier:</span>
-                        <span class="font-semibold text-gray-800">{{ $order->user->username }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Order Type:</span>
-                        <span class="font-semibold text-gray-800">{{ $order->order_type }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Payment:</span>
-                        <span class="font-semibold text-gray-800">Cash</span>
-                    </div>
-                </div>
+    <div class="flex justify-between">
+        <span class="text-gray-600">Order #:</span>
+        <span class="font-semibold text-gray-800">{{ $order->order_id }}</span>
+    </div>
+    <div class="flex justify-between">
+        <span class="text-gray-600">Date:</span>
+        <span class="font-semibold text-gray-800">{{ $order->created_at->format('M d, Y') }}</span>
+    </div>
+    <div class="flex justify-between">
+        <span class="text-gray-600">Time:</span>
+        <span class="font-semibold text-gray-800">{{ $order->created_at->format('h:i A') }}</span>
+    </div>
+    <!-- ADD THIS SECTION: -->
+    @if(isset($nickname) && $nickname)
+<div class="flex justify-between mb-1">
+    <span class="text-gray-600">Customer:</span>
+    <span class="font-semibold text-blue-600">{{ $nickname }}</span>
+</div>
+@endif
+    <div class="flex justify-between">
+        <span class="text-gray-600">Cashier:</span>
+        <span class="font-semibold text-gray-800">{{ $order->user->username }}</span>
+    </div>
+    <div class="flex justify-between">
+        <span class="text-gray-600">Order Type:</span>
+        <span class="font-semibold text-gray-800">{{ $order->order_type }}</span>
+    </div>
+    <div class="flex justify-between">
+        <span class="text-gray-600">Payment:</span>
+        <span class="font-semibold text-gray-800">Cash</span>
+    </div>
+</div>
                 
                 <div class="border-t-2 border-dashed border-gray-300 pt-4 mb-4">
                     <table class="w-full text-sm mb-4">

@@ -8,14 +8,20 @@ use App\Models\Order;
 class KitchenController extends Controller
 {
     public function index()
-    {
-        $orders = Order::with(['user', 'orderItems.menuItem'])
-                      ->whereIn('status', ['pending', 'preparing'])
-                      ->latest()
-                      ->get();
+{
+    $orders = Order::with(['user', 'orderItems.menuItem'])
+                   ->whereIn('status', ['pending', 'preparing'])
+                   ->latest()
+                   ->get();
 
-        return view('kitchen.display', compact('orders'));
-    }
+    // Add nickname dynamically from session
+    $orders->each(function($order) {
+        $order->nickname = session("order_nickname_{$order->id}") ?? $order->user->username;
+    });
+
+    return view('kitchen.display', compact('orders'));
+}
+
 
     public function startPreparing(Order $order)
     {

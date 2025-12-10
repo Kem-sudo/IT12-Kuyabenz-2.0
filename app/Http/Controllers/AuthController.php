@@ -27,8 +27,8 @@ class AuthController extends Controller
         // Find user by username
         $user = User::where('username', $credentials['username'])->first();
 
-        // Check if user exists and password matches
-        if ($user && $credentials['password'] === $user->password) {
+        // Check if user exists and password matches (FIXED HERE)
+        if ($user && Hash::check($credentials['password'], $user->password)) {
             Auth::login($user);
             return $this->redirectToDashboard($user->role);
         }
@@ -46,7 +46,7 @@ class AuthController extends Controller
 
         $user = User::create([
             'username' => $request->username,
-            'password' => $request->password,
+            'password' => Hash::make($request->password), // Hash password here too
             'role' => $request->role,
         ]);
 

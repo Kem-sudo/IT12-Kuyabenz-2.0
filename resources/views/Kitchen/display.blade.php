@@ -41,8 +41,19 @@
                         </div>
                         
                         <div class="mb-3 p-2 bg-blue-50 rounded border-l-4" style="border-color: #dc2626;">
-                            <p class="text-xs text-gray-600">Cashier: <span class="font-semibold">{{ $order->user->username }}</span></p>
-                        </div>
+    <p class="text-xs text-gray-600">Cashier: <span class="font-semibold">{{ $order->user->username }}</span></p>
+    <!-- ADD NICKNAME DISPLAY: -->
+    @if($order->nickname)
+<p class="text-xs text-gray-600 mt-1">
+    Nickname: <span class="font-semibold text-red-600">{{ $order->nickname }}</span>
+</p>
+@endif
+
+
+
+
+
+</div>
                         
                         <div class="space-y-2 mb-4">
     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Order Items:</p>
@@ -53,7 +64,7 @@
                 <img src="{{ $item->menuItem->image_url }}" 
                      alt="{{ $item->menuItem->name }}" 
                      class="w-full h-full object-cover"
-                     onerror="this.src='/images/default-food.png'">
+                     onerror="this.src='/images/Errorimage.jpg'">
             </div>
             <div class="flex-1">
                 <p class="font-semibold text-gray-800 text-sm">{{ $item->menuItem->name }}</p>

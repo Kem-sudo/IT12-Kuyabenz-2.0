@@ -75,4 +75,11 @@ class MenuItemController extends Controller
         $menuItem->delete();
         return redirect()->route('admin.menu')->with('success', 'Menu item deleted successfully');
     }
+
+    public function edit(MenuItem $menuItem)
+{
+    // Return the item as JSON for the frontend to populate the form
+    return response()->json($menuItem);
+}
+
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -23,11 +24,25 @@ class UserController extends Controller
 
         User::create([
             'username' => $request->username,
-            'password' => $request->password,
+            'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
 
         return redirect()->route('admin.users')->with('success', 'User created successfully');
+    }
+
+    // Add this method for changing password
+    public function updatePassword(Request $request, User $user)
+    {
+        $request->validate([
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('admin.users')->with('success', 'Password updated successfully for ' . $user->username);
     }
 
     public function destroy(User $user)

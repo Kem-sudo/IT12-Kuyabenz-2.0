@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/sales/download', [AdminController::class, 'downloadSalesReport'])->name('admin.sales.download'); // Add this line
         Route::get('/users', [UserController::class, 'index'])->name('admin.users');
         Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+        Route::post('/users/{user}/change-password', [UserController::class, 'updatePassword'])->name('admin.users.change-password');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
         
         Route::get('/menu', [MenuItemController::class, 'index'])->name('admin.menu');
@@ -44,7 +45,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/orders/{order}/start', [KitchenController::class, 'startPreparing'])->name('kitchen.start-preparing');
         Route::post('/orders/{order}/complete', [KitchenController::class, 'completeOrder'])->name('kitchen.complete-order');
     });
+
+    
+
+    // Edit
+Route::get('/admin/menu/{menuItem}/edit', [MenuItemController::class, 'edit'])->name('admin.menu.edit');
+
 });
+
 
 
 Route::redirect('/', '/login');

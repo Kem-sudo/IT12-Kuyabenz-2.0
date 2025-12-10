@@ -16,78 +16,97 @@ class CashierController extends Controller
         return view('cashier.pos', compact('menuItems'));
     }
 
-    public function processOrder(Request $request)
-    {
-        try {
-            $request->validate([
-                'items' => 'required',
-                'payment_amount' => 'required|numeric|min:0',
-                'order_type' => 'required|in:Dine In,Take Out',
-            ]);
+   public function processOrder(Request $request)
+{
+    try {
+        $request->validate([
+            'items' => 'required',
+            'payment_amount' => 'required|numeric|min:0',
+            'order_type' => 'required|in:Dine In,Take Out',
+            'nickname' => 'nullable|string|max:50', // Accept but won't store
+        ]);
 
-            // Parse the items JSON
-            $items = json_decode($request->items, true);
-            
-            if (empty($items)) {
-                return back()->withErrors(['error' => 'No items in order']);
-            }
-
-            $total = 0;
-
-            // Calculate total and validate stock
-            foreach ($items as $item) {
-                $menuItem = MenuItem::find($item['id']);
-                if (!$menuItem) {
-                    return back()->withErrors(['error' => 'Menu item not found: ' . $item['name']]);
-                }
-                if ($menuItem->stock < $item['quantity']) {
-                    return back()->withErrors(['error' => "Insufficient stock for {$menuItem->name}. Available: {$menuItem->stock}"]);
-                }
-                $subtotal = $menuItem->price * $item['quantity'];
-                $total += $subtotal;
-            }
-
-            if ($request->payment_amount < $total) {
-                return back()->withErrors(['payment' => 'Insufficient payment amount. Total: ₱' . number_format($total, 2)]);
-            }
-
-            // Create order
-            $order = Order::create([
-                'order_id' => 'ORD' . Str::random(8),
-                'user_id' => auth()->id(),
-                'total' => $total,
-                'payment_amount' => $request->payment_amount,
-                'change_amount' => $request->payment_amount - $total,
-                'payment_method' => 'Cash',
-                'order_type' => $request->order_type,
-                'status' => 'pending',
-            ]);
-
-            // Create order items and update stock
-            foreach ($items as $item) {
-                $menuItem = MenuItem::find($item['id']);
-                
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'menu_item_id' => $item['id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $menuItem->price,
-                ]);
-
-                // Update stock
-                $menuItem->decrement('stock', $item['quantity']);
-            }
-
-            return redirect()->route('cashier.receipt', $order->id);
-
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Server error: ' . $e->getMessage()]);
+        // Parse the items JSON
+        $items = json_decode($request->items, true);
+        
+        if (empty($items)) {
+            return back()->withErrors(['error' => 'No items in order']);
         }
-    }
 
-    public function showReceipt(Order $order)
-    {
-        $order->load(['user', 'orderItems.menuItem']);
-        return view('cashier.receipt', compact('order'));
+        $total = 0;
+
+        // Calculate total and validate stock
+        foreach ($items as $item) {
+            $menuItem = MenuItem::find($item['id']);
+            if (!$menuItem) {
+                return back()->withErrors(['error' => 'Menu item not found: ' . $item['name']]);
+            }
+            if ($menuItem->stock < $item['quantity']) {
+                return back()->withErrors(['error' => "Insufficient stock for {$menuItem->name}. Available: {$menuItem->stock}"]);
+            }
+            $subtotal = $menuItem->price * $item['quantity'];
+            $total += $subtotal;
+        }
+
+        if ($request->payment_amount < $total) {
+            return back()->withErrors(['payment' => 'Insufficient payment amount. Total: ₱' . number_format($total, 2)]);
+        }
+
+        // Create order (NO nickname in database)
+        // After creating the order
+$order = Order::create([
+    'order_id' => 'ORD' . Str::random(8),
+    'user_id' => auth()->id(),
+    'total' => $total,
+    'payment_amount' => $request->payment_amount,
+    'change_amount' => $request->payment_amount - $total,
+    'payment_method' => 'Cash',
+    'order_type' => $request->order_type,
+    'status' => 'pending',
+]);
+
+// Save nickname in session temporarily
+if ($request->nickname) {
+    session(["order_nickname_{$order->id}" => $request->nickname]);
+}
+
+
+        // Create order items and update stock
+        foreach ($items as $item) {
+            $menuItem = MenuItem::find($item['id']);
+            
+            OrderItem::create([
+                'order_id' => $order->id,
+                'menu_item_id' => $item['id'],
+                'quantity' => $item['quantity'],
+                'price' => $menuItem->price,
+            ]);
+
+            // Update stock
+            $menuItem->decrement('stock', $item['quantity']);
+        }
+
+        // Pass nickname via URL parameter (temporary)
+        return redirect()->route('cashier.receipt', [
+            'order' => $order->id,
+            'nickname' => $request->nickname ?? ''
+        ]);
+
+    } catch (\Exception $e) {
+        return back()->withErrors(['error' => 'Server error: ' . $e->getMessage()]);
     }
+}
+
+public function showReceipt(Order $order, Request $request)
+{
+    $order->load(['user', 'orderItems.menuItem']);
+    
+    // Get nickname from URL (temporary)
+    $nickname = $request->query('nickname');
+    
+    return view('cashier.receipt', [
+        'order' => $order,
+        'nickname' => $nickname
+    ]);
+}
 }

@@ -88,10 +88,17 @@
                 <p class="text-sm text-gray-600 mt-2">Choose your preferred format for the sales report</p>
             </div>
             
+            <!-- Hidden download form -->
+            <form id="downloadForm" method="POST" action="{{ route('admin.sales.download') }}" style="display: none;">
+                @csrf
+                <input type="hidden" name="format" id="downloadFormat">
+                <input type="hidden" name="filter" value="{{ $filter }}">
+            </form>
+            
             <!-- Sales Summary -->
             <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
                 <h3 class="text-xl font-bold mb-4 text-gray-800">Sales Summary - {{ ucfirst($filter) }} Report</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <p class="text-2xl font-bold text-gray-800">₱{{ number_format($salesData->sum('total_sales'), 2) }}</p>
                         <p class="text-sm text-gray-600">Total Sales</p>
@@ -104,10 +111,6 @@
                         <p class="text-2xl font-bold text-gray-800">{{ $salesData->count() }}</p>
                         <p class="text-sm text-gray-600">Periods</p>
                     </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <p class="text-2xl font-bold text-gray-800">₱{{ number_format($salesData->avg('total_sales') ?? 0, 2) }}</p>
-                        <p class="text-sm text-gray-600">Average per Period</p>
-                    </div>
                 </div>
                 
                 <div class="overflow-x-auto">
@@ -117,7 +120,6 @@
                                 <th class="text-left py-3 px-4 font-bold text-gray-800">Period</th>
                                 <th class="text-center py-3 px-4 font-bold text-gray-800">Transactions</th>
                                 <th class="text-right py-3 px-4 font-bold text-gray-800">Total Sales</th>
-                                <th class="text-right py-3 px-4 font-bold text-gray-800">Average Sale</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -138,7 +140,6 @@
                                         </td>
                                         <td class="py-3 px-4 text-center text-gray-700">{{ $data->transactions }}</td>
                                         <td class="py-3 px-4 text-right font-bold text-gray-800">₱{{ number_format($data->total_sales, 2) }}</td>
-                                        <td class="py-3 px-4 text-right text-gray-600">₱{{ number_format($average, 2) }}</td>
                                     </tr>
                                 @endforeach
                             @else
@@ -153,9 +154,6 @@
                                 <td class="py-4 px-4 text-gray-800">TOTAL</td>
                                 <td class="py-4 px-4 text-center text-gray-800">{{ $totalTransactions }}</td>
                                 <td class="py-4 px-4 text-right text-xl text-gray-800">₱{{ number_format($totalSales, 2) }}</td>
-                                <td class="py-4 px-4 text-right text-gray-600">
-                                    ₱{{ number_format($totalTransactions > 0 ? $totalSales / $totalTransactions : 0, 2) }}
-                                </td>
                             </tr>
                         </tfoot>
                         @endif
@@ -218,23 +216,19 @@
         // Show loading modal
         document.getElementById('downloadModal').classList.remove('hidden');
         
-        // Set the format and submit the form
+        // Set the format in the hidden input
         document.getElementById('downloadFormat').value = format;
         
-        // Submit the form after a short delay to show the loading animation
-        setTimeout(() => {
-            document.getElementById('downloadForm').submit();
-        }, 1000);
+        // Submit the form immediately (no delay needed)
+        document.getElementById('downloadForm').submit();
     }
 
-    // Close modal if user clicks outside
     document.getElementById('downloadModal').addEventListener('click', function(e) {
         if (e.target === this) {
             this.classList.add('hidden');
         }
     });
 
-    // Show success message if download was successful
     @if(session('download_success'))
         alert('{{ session('download_success') }}');
     @endif
@@ -243,5 +237,9 @@
         alert('Error: {{ session('download_error') }}');
         document.getElementById('downloadModal').classList.add('hidden');
     @endif
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('downloadModal').classList.add('hidden');
+    });
 </script>
 @endsection

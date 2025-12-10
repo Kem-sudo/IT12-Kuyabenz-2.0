@@ -80,7 +80,7 @@
                                 <img src="{{ $item->image_url }}" 
                                      alt="{{ $item->name }}" 
                                      class="w-full h-full object-cover"
-                                     onerror="this.src='{{ asset('images/default-food.png') }}'">
+                                     onerror="this.src='{{ asset('images/Errorimage.jpg') }}'">
                             </div>
                             
                             <!-- Item Details -->
@@ -101,10 +101,11 @@
                                 
                                 <!-- Action Buttons -->
                                 <div class="flex gap-2">
-                                    <button onclick="editMenuItem({{ $item->id }})" 
-                                            class="flex-1 bg-gray-600 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:bg-gray-700 transition">
-                                        Edit
-                                    </button>
+                                   <button onclick="editMenuItem({{ $item->id }})" 
+        class="flex-1 bg-gray-600 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:bg-gray-700 transition">
+    Edit
+</button>
+
                                     <form method="POST" action="{{ route('admin.menu.destroy', $item) }}" class="flex-1">
                                         @csrf
                                         @method('DELETE')
@@ -217,32 +218,38 @@
     }
 
     function editMenuItem(itemId) {
-        // For now, we'll just show a message
-        // In a real implementation, you would fetch the item data and populate the form
-        alert('Edit functionality for item ID: ' + itemId + '\n\nIn a complete implementation, this would load the item data into the form for editing.');
-        
-        // Example of what the complete implementation would do:
-         fetch(`/admin/menu/${itemId}/edit`)
-             .then(response => response.json())
-             .then(item => {
-                 editingItemId = itemId;
-                 document.getElementById('modalTitle').textContent = 'Edit Menu Item';
-                 document.getElementById('menuItemForm').action = `/admin/menu/${itemId}`;
-                 document.getElementById('formMethod').innerHTML = '@method("PUT")';
-                 document.querySelector('input[name="name"]').value = item.name;
-                 document.querySelector('select[name="category"]').value = item.category;
-                 document.querySelector('input[name="price"]').value = item.price;
-                 document.querySelector('input[name="stock"]').value = item.stock;
-                 
-                 if (item.image_url) {
-                     document.getElementById('imagePreview').src = item.image_url;
-                     document.getElementById('imagePreview').classList.remove('hidden');
-                     document.getElementById('imagePlaceholder').classList.add('hidden');
-                 }
-                 
-                 document.getElementById('menuItemModal').classList.remove('hidden');
-             });
-    }
+    // Fetch the menu item details from the server
+    fetch(`/admin/menu/${itemId}/edit`)
+        .then(response => response.json())
+        .then(item => {
+            // Populate the form fields with the item's data
+            editingItemId = itemId; // Set the global editing item ID
+
+            document.getElementById('modalTitle').textContent = 'Edit Menu Item';
+            document.getElementById('menuItemForm').action = `/admin/menu/${itemId}`; // Set form action to the update route
+            document.getElementById('formMethod').innerHTML = '@method("PUT")'; // Add the PUT method for form submission
+
+            document.querySelector('input[name="name"]').value = item.name;
+            document.querySelector('select[name="category"]').value = item.category;
+            document.querySelector('input[name="price"]').value = item.price;
+            document.querySelector('input[name="stock"]').value = item.stock;
+
+            // Handle image preview if there's an existing image
+            if (item.image) {
+                document.getElementById('imagePreview').src = '/storage/' + item.image;
+                document.getElementById('imagePreview').classList.remove('hidden');
+                document.getElementById('imagePlaceholder').classList.add('hidden');
+            } else {
+                document.getElementById('imagePreview').classList.add('hidden');
+                document.getElementById('imagePlaceholder').classList.remove('hidden');
+            }
+
+            // Show the modal
+            document.getElementById('menuItemModal').classList.remove('hidden');
+        })
+        .catch(error => console.error('Error fetching item data:', error));
+}
+
 
     function hideMenuItemForm() {
         document.getElementById('menuItemModal').classList.add('hidden');

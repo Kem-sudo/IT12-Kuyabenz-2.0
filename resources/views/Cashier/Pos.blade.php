@@ -92,10 +92,21 @@
             </div>
         </div>
         
+        <!-- RIGHT PANEL - CURRENT ORDER -->
         <div class="w-96 bg-white border-l border-gray-200 flex flex-col" style="height: 100vh;">
             <div class="p-6 border-b border-gray-200 bg-white">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Current Order</h2>
                 
+                <!-- CUSTOMER NICKNAME (Temporary - Not stored in DB) -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2 text-gray-700">Name</label>
+                    <input type="text" id="nickname-input" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-gray-800"
+                           maxlength="30"
+                           oninput="updateOrderHeader()">
+                </div>
+                
+                <!-- ORDER TYPE -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2 text-gray-700">Order Type</label>
                     <div class="flex gap-2">
@@ -109,10 +120,20 @@
                 </div>
             </div>
             
+            <!-- ORDER ITEMS WITH NICKNAME DISPLAY -->
             <div class="flex-1 overflow-y-auto p-4" id="order-items-container">
-                <p class="text-center text-gray-500 py-8">No items in order</p>
+                <!-- Nickname display inside order (appears when nickname entered) -->
+                <div id="nickname-display" class="mb-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500 hidden">
+                    <p class="text-sm font-semibold text-gray-800">For: <span id="nickname-display-text" class="text-blue-600 font-bold"></span></p>
+                </div>
+                
+                <!-- Order items list -->
+                <div id="order-items-list">
+                    <p class="text-center text-gray-500 py-8">No items in order</p>
+                </div>
             </div>
             
+            <!-- PAYMENT SECTION -->
             <div class="p-6 border-t border-gray-200 bg-white">
                 <div class="flex justify-between items-center mb-4 text-2xl font-bold">
                     <span class="text-gray-800">Total:</span>
@@ -120,7 +141,6 @@
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2 text-gray-700">Payment Method</label>
                     <div class="w-full px-4 py-3 bg-gray-100 rounded-lg text-lg font-semibold text-center text-gray-800">
                         Cash
                     </div>
@@ -140,11 +160,13 @@
                     </div>
                 </div>
                 
+                <!-- ORDER FORM -->
                 <form method="POST" action="{{ route('cashier.process-order') }}" id="order-form">
                     @csrf
                     <input type="hidden" name="items" id="order-items-input">
                     <input type="hidden" name="payment_amount" id="payment-amount-input">
                     <input type="hidden" name="order_type" id="order-type-input" value="Dine In">
+                    <input type="hidden" name="nickname" id="nickname-hidden-input">
                     
                     <button type="button" onclick="submitOrder()" id="process-order-btn" 
                             class="w-full bg-gray-800 text-white py-4 rounded-lg font-bold text-lg opacity-50 cursor-not-allowed hover:bg-gray-700 transition" 
@@ -177,105 +199,76 @@
         }
 
         function renderMenuItems() {
-    const filteredItems = selectedCategory === 'all' 
-        ? menuItems 
-        : menuItems.filter(item => item.category === selectedCategory);
-    
-    const container = document.getElementById('menu-items-container');
-    
-    if (filteredItems.length === 0) {
-        container.innerHTML = `
-            <div class="col-span-full text-center text-gray-500 py-8">
-                <p>No items available in this category</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = filteredItems.map(item => {
-        // DEBUG: Log each item's image info
-        console.log('Menu Item:', {
-            name: item.name,
-            image: item.image,
-            image_url: item.image_url,
-            has_image: !!item.image,
-            has_image_url: !!item.image_url
-        });
-
-        // Use image_url from model, fallback to constructed URL
-        let imageUrl = item.image_url || '/images/default-food.png';
-        
-        // If image_url is default but we have an image path, try to construct URL
-        if (imageUrl.includes('default-food.png') && item.image) {
-            imageUrl = '/storage/' + item.image;
-        }
-
-        return `
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition cursor-pointer relative ${item.stock === 0 ? 'opacity-50' : ''}" 
-                 onclick="${item.stock === 0 ? '' : `addToOrder(${item.id})`}">
-                <!-- Item Image -->
-                <div class="h-24 bg-gray-200 rounded-t-lg overflow-hidden">
-                    <img src="${imageUrl}" 
-                         alt="${item.name}" 
-                         class="w-full h-full object-cover"
-                         onerror="handleImageError(this, '${item.image}', '${item.image_url}')">
-                </div>
-                
-                <!-- Item Details -->
-                <div class="p-3">
-                    <h3 class="font-semibold text-gray-800 text-sm mb-1">${item.name}</h3>
-                    <p class="text-xs text-gray-600 mb-2">${item.category}</p>
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-gray-800 text-sm">₱${parseFloat(item.price).toFixed(2)}</span>
-                        <span class="text-xs ${item.stock < 10 ? 'text-red-600 font-semibold' : 'text-gray-500'}">
-                            Stock: ${item.stock}
-                        </span>
+            const filteredItems = selectedCategory === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === selectedCategory);
+            
+            const container = document.getElementById('menu-items-container');
+            
+            if (filteredItems.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center text-gray-500 py-8">
+                        <p>No items available in this category</p>
                     </div>
-                </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredItems.map(item => {
+                let imageUrl = item.image_url || '/images/default-food.png';
                 
-                ${item.stock === 0 ? 
-                    '<div class="absolute inset-0 bg-red-50 bg-opacity-80 flex items-center justify-center rounded-lg"><span class="text-red-600 text-xs font-semibold">Out of Stock</span></div>' : 
-                    ''
+                if (imageUrl.includes('default-food.png') && item.image) {
+                    imageUrl = '/storage/' + item.image;
                 }
-            </div>
-        `;
-    }).join('');
-}
 
-function handleImageError(img, imagePath, imageUrl) {
-    console.error('IMAGE LOAD ERROR:', {
-        currentSrc: img.src,
-        imagePath: imagePath,
-        imageUrl: imageUrl,
-        itemName: img.alt
-    });
-
-    // Try different URL formats
-    if (imagePath) {
-        // Try without storage prefix
-        if (img.src.includes('/storage/')) {
-            img.src = img.src.replace('/storage/', '/');
-        } 
-        // Try with storage prefix
-        else if (!img.src.includes('/storage/')) {
-            img.src = '/storage/' + imagePath;
+                return `
+                    <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition cursor-pointer relative ${item.stock === 0 ? 'opacity-50' : ''}" 
+                         onclick="${item.stock === 0 ? '' : `addToOrder(${item.id})`}">
+                        <div class="h-24 bg-gray-200 rounded-t-lg overflow-hidden">
+                            <img src="${imageUrl}" 
+                                 alt="${item.name}" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.src='/images/Errorimage.jpg'">
+                        </div>
+                        
+                        <div class="p-3">
+                            <h3 class="font-semibold text-gray-800 text-sm mb-1">${item.name}</h3>
+                            <p class="text-xs text-gray-600 mb-2">${item.category}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-gray-800 text-sm">₱${parseFloat(item.price).toFixed(2)}</span>
+                                <span class="text-xs ${item.stock < 10 ? 'text-red-600 font-semibold' : 'text-gray-500'}">
+                                    Stock: ${item.stock}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        ${item.stock === 0 ? 
+                            '<div class="absolute inset-0 bg-red-50 bg-opacity-80 flex items-center justify-center rounded-lg"><span class="text-red-600 text-xs font-semibold">Out of Stock</span></div>' : 
+                            ''
+                        }
+                    </div>
+                `;
+            }).join('');
         }
-    } else {
-        // Final fallback
-        img.src = '/images/default-food.png';
-    }
-    
-    // Prevent infinite loop
-    img.onerror = function() {
-        this.src = '/images/default-food.png';
-        this.onerror = null;
-    };
-}
 
         function selectCategory(category) {
             selectedCategory = category;
             renderCategories();
             renderMenuItems();
+        }
+
+        // Update order header with nickname
+        function updateOrderHeader() {
+            const nickname = document.getElementById('nickname-input').value.trim();
+            const nicknameDisplay = document.getElementById('nickname-display');
+            const nicknameText = document.getElementById('nickname-display-text');
+            
+            if (nickname) {
+                nicknameText.textContent = nickname;
+                nicknameDisplay.classList.remove('hidden');
+            } else {
+                nicknameDisplay.classList.add('hidden');
+            }
         }
 
         function selectOrderType(type) {
@@ -288,9 +281,11 @@ function handleImageError(img, imagePath, imageUrl) {
             if (type === 'Dine In') {
                 btnDineIn.className = 'flex-1 py-2 rounded-lg font-semibold text-sm text-white bg-gray-800';
                 btnTakeOut.className = 'flex-1 py-2 rounded-lg font-semibold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300';
+                // Update placeholder for dine-in
             } else {
                 btnTakeOut.className = 'flex-1 py-2 rounded-lg font-semibold text-sm text-white bg-gray-800';
                 btnDineIn.className = 'flex-1 py-2 rounded-lg font-semibold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300';
+                // Update placeholder for take-out
             }
         }
 
@@ -343,7 +338,7 @@ function handleImageError(img, imagePath, imageUrl) {
         }
 
         function renderOrderSummary() {
-            const container = document.getElementById('order-items-container');
+            const container = document.getElementById('order-items-list');
             const totalElement = document.getElementById('order-total');
             const processBtn = document.getElementById('process-order-btn');
             
@@ -360,6 +355,9 @@ function handleImageError(img, imagePath, imageUrl) {
             
             processBtn.disabled = false;
             processBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            
+            // Show nickname if entered
+            updateOrderHeader();
             
             container.innerHTML = currentOrder.map((item, index) => `
                 <div class="order-item p-3 border border-gray-200 rounded-lg mb-3 bg-white shadow-sm">
@@ -413,14 +411,18 @@ function handleImageError(img, imagePath, imageUrl) {
                 return;
             }
             
+            // Get nickname (can be same as previous customers)
+            const nickname = document.getElementById('nickname-input').value.trim();
+            
             // Set the form values
             document.getElementById('order-items-input').value = JSON.stringify(currentOrder);
             document.getElementById('payment-amount-input').value = paymentAmount;
+            document.getElementById('nickname-hidden-input').value = nickname;
             
             // Disable button and show loading
             const btn = document.getElementById('process-order-btn');
             btn.disabled = true;
-            btn.textContent = 'Processing...';
+            btn.textContent = nickname ? `Processing for ${nickname}...` : 'Processing...';
             
             // Submit the form
             document.getElementById('order-form').submit();
@@ -431,7 +433,6 @@ function handleImageError(img, imagePath, imageUrl) {
             renderCategories();
             renderMenuItems();
             selectOrderType('Dine In');
-            console.log('Menu items loaded:', menuItems);
         });
     </script>
 </body>
