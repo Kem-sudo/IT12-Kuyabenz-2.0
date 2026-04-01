@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.App')
 
 @section('content')
 <div class="w-full h-full" style="background-color: #111827; min-height: 100vh;">
-    <nav class="text-white p-4 shadow-lg" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+    <nav class="text-white p-4 shadow-lg" style="background: linear-gradient(135deg, #181d1b 0%, #181d1b 100%);">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <span class="live-indicator" style="width: 12px; height: 12px;"></span>

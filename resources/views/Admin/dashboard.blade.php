@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.App')
 
 @section('content')
 <div class="w-full h-full flex" style="min-height: 100vh;">
@@ -58,22 +58,22 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
                     <h3 class="text-sm font-medium text-gray-600 mb-2">Total Sales</h3>
-                    <p class="text-3xl font-bold text-gray-800">₱{{ number_format($stats['totalSales'], 2) }}</p>
+                    <p class="text-3xl font-bold text-gray-800 text-right">₱{{ number_format($stats['totalSales'], 2) }}</p>
                 </div>
                 
                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
                     <h3 class="text-sm font-medium text-gray-600 mb-2">Today's Orders</h3>
-                    <p class="text-3xl font-bold text-gray-800">{{ $stats['todayOrders'] }}</p>
+                    <p class="text-3xl font-bold text-gray-800 text-right">{{ $stats['todayOrders'] }}</p>
                 </div>
                 
                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
                     <h3 class="text-sm font-medium text-gray-600 mb-2">Active Orders</h3>
-                    <p class="text-3xl font-bold text-gray-800">{{ $stats['activeOrders'] }}</p>
+                    <p class="text-3xl font-bold text-gray-800 text-right">{{ $stats['activeOrders'] }}</p>
                 </div>
                 
                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
                     <h3 class="text-sm font-medium text-gray-600 mb-2">Menu Items</h3>
-                    <p class="text-3xl font-bold text-gray-800">{{ $stats['menuItems'] }}</p>
+                    <p class="text-3xl font-bold text-gray-800 text-right">{{ $stats['menuItems'] }}</p>
                 </div>
             </div>
             
@@ -114,14 +114,14 @@
                                             <span class="font-semibold text-gray-800">Order #{{ $order->order_id }}</span>
                                             <p class="text-xs text-gray-600">{{ $order->created_at->format('M d, Y h:i A') }}</p>
                                         </div>
-                                        <span class="px-3 py-1 text-xs font-semibold rounded 
-                                            {{ $order->status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                        <span class="px-3 py-1 text-xs font-semibold rounded
+                                            {{ $order->status === 'completed' ? 'bg-green-100 text-green-800' :
                                                ($order->status === 'preparing' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800') }}">
                                             {{ $order->status }}
                                         </span>
                                     </div>
                                     <p class="text-sm text-gray-600 mb-2">{{ $order->orderItems->count() }} item(s) | {{ $order->payment_method }}</p>
-                                    <p class="font-bold text-gray-800">₱{{ number_format($order->total, 2) }}</p>
+                                    <p class="font-bold text-gray-800 text-right">₱{{ number_format($order->total, 2) }}</p>
                                 </div>
                             @endforeach
                         @endif
@@ -141,7 +141,7 @@
                                         <p class="text-sm text-gray-600">Role: <strong>{{ $user->role }}</strong></p>
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <span class="px-3 py-1 text-xs font-semibold rounded 
+                                        <span class="px-3 py-1 text-xs font-semibold rounded
                                             {{ $user->role === 'admin' ? 'bg-red-100 text-red-800' : 
                                                ($user->role === 'cashier' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800') }}">
                                             {{ strtoupper($user->role) }}
@@ -150,7 +150,7 @@
                                             <form method="POST" action="{{ route('admin.users.destroy', $user) }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700" 
+                                                <button type="submit" class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                                                         onclick="return confirm('Are you sure you want to delete this user?')">
                                                     Delete
                                                 </button>
@@ -168,7 +168,7 @@
                             Manage Staff
                         </a>
                     </div>
-                </div>
+                </div>  
             </div>
         </div>
     </div>

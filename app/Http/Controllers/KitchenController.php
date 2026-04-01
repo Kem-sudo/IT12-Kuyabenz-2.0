@@ -14,12 +14,14 @@ class KitchenController extends Controller
                    ->latest()
                    ->get();
 
-    // Add nickname dynamically from session
-    $orders->each(function($order) {
-        $order->nickname = session("order_nickname_{$order->id}") ?? $order->user->username;
+    // Prefer stored nickname; fall back to legacy session data for older orders
+    $orders->each(function ($order) {
+        if ($order->nickname === null || $order->nickname === '') {
+            $order->nickname = session("order_nickname_{$order->id}");
+        }
     });
 
-    return view('kitchen.display', compact('orders'));
+    return view('Kitchen.display', compact('orders'));
 }
 
 

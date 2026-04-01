@@ -4,59 +4,66 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
     public function showLogin()
     {
-        // Ensure admin user exists
         User::getAdminUser();
-        
-        return view('auth.login');
+
+        return view('Auth.Login');
     }
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        // Find user by username
-        $user = User::where('username', $credentials['username'])->first();
+        $user = User::where('username', $request->username)->first();
 
-        // Check if user exists and password matches (FIXED HERE)
-        if ($user && Hash::check($credentials['password'], $user->password)) {
+        if ($user && Hash::check($request->password, $user->password)) {
             Auth::login($user);
+            $request->session()->regenerate();
+
             return $this->redirectToDashboard($user->role);
         }
 
-        return back()->withErrors(['login' => 'Invalid username or password']);
+        return back()->withErrors([
+            'login' => 'Invalid username or password'
+        ]);
     }
 
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required|unique:users',
-            'password' => 'required|min:6',
+            'username' => 'required|string|unique:users,username',
+            'password' => 'required|string|min:15|confirmed',
             'role' => 'required|in:admin,cashier,kitchen',
         ]);
 
         $user = User::create([
             'username' => $request->username,
-            'password' => Hash::make($request->password), // Hash password here too
+            'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
 
         Auth::login($user);
+        $request->session()->regenerate();
+
         return $this->redirectToDashboard($user->role);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 

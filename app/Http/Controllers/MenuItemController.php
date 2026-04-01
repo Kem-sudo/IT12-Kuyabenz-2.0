@@ -11,7 +11,7 @@ class MenuItemController extends Controller
     public function index()
     {
         $menuItems = MenuItem::all();
-        return view('admin.menu.index', compact('menuItems'));
+        return view('Admin.menu.index', compact('menuItems'));
     }
 
     public function store(Request $request)
@@ -77,9 +77,8 @@ class MenuItemController extends Controller
     }
 
     public function edit(MenuItem $menuItem)
-{
-    // Return the item as JSON for the frontend to populate the form
-    return response()->json($menuItem);
-}
+    {
+        return response()->json($menuItem);
+    }
 
 }

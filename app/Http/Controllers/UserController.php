@@ -11,7 +11,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('admin.users.index', compact('users'));
+        return view('Admin.users.index', compact('users'));
     }
 
     public function store(Request $request)
@@ -35,7 +35,7 @@ class UserController extends Controller
     public function updatePassword(Request $request, User $user)
     {
         $request->validate([
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|string|min:15|confirmed',
         ]);
 
         $user->update([

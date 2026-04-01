@@ -1,15 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.App')
 
 @section('content')
-<div class="w-full h-full flex" style="min-height: 100vh;">
-    <!-- Sidebar -->
-    <div class="w-64 bg-gray-800 text-white shadow-lg flex flex-col">
-        <div class="p-6 border-b border-gray-700">
+<div class="w-full h-full flex" style="height: 100vh; overflow: hidden;">
+    <!-- Sidebar - Fixed height with scrolling -->
+    <div class="w-64 bg-gray-800 text-white shadow-lg flex flex-col" style="height: 100vh; overflow-y: auto;">
+        <div class="p-6 border-b border-gray-700 flex-shrink-0">
             <h1 class="text-2xl font-bold mb-1">Kuya Benz</h1>
             <p class="text-sm text-gray-300">Admin Panel</p>
         </div>
         
-        <nav class="flex-1 p-4">
+        <nav class="flex-1 p-4 flex-shrink-0">
             <a href="{{ route('admin.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-gray-700">
                 <span class="text-lg"></span>
                 <span>Dashboard</span>
@@ -36,7 +36,7 @@
             </a>
         </nav>
         
-        <div class="p-4 border-t border-gray-700">
+        <div class="p-4 border-t border-gray-700 flex-shrink-0">
             <div class="mb-4 p-3 bg-gray-700 rounded-lg">
                 <p class="text-xs text-gray-300 mb-1">Logged in as</p>
                 <p class="font-bold">{{ auth()->user()->username }}</p>
@@ -50,8 +50,8 @@
         </div>
     </div>
     
-    <!-- Main Content -->
-    <div class="flex-1 bg-gray-50">
+    <!-- Main Content - Scrollable -->
+    <div class="flex-1 bg-gray-50 overflow-y-auto" style="height: 100vh;">
         <div class="p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-gray-800">Sales Report</h2>
@@ -99,17 +99,20 @@
             <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
                 <h3 class="text-xl font-bold mb-4 text-gray-800">Sales Summary - {{ ucfirst($filter) }} Report</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <p class="text-2xl font-bold text-gray-800">₱{{ number_format($salesData->sum('total_sales'), 2) }}</p>
-                        <p class="text-sm text-gray-600">Total Sales</p>
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <p class="text-sm text-gray-600 ">Total Sales</p>
+                        <p class="text-2xl font-bold text-gray-800 text-right">₱{{ number_format($salesData->sum('total_sales'), 2) }}</p>
+                        
                     </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <p class="text-2xl font-bold text-gray-800">{{ $salesData->sum('transactions') }}</p>
-                        <p class="text-sm text-gray-600">Total Transactions</p>
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                         <p class="text-sm text-gray-600">Total Transactions</p>
+                        <p class="text-2xl font-bold text-gray-800 text-right">{{ $salesData->sum('transactions') }}</p>
+                       
                     </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <p class="text-2xl font-bold text-gray-800">{{ $salesData->count() }}</p>
-                        <p class="text-sm text-gray-600">Periods</p>
+                    <div class=" p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <p class="text-sm text-gray-600 ">Periods</p>
+                        <p class="text-2xl font-bold text-gray-800 text-right">{{ $salesData->count() }}</p>
+                        
                     </div>
                 </div>
                 
@@ -117,7 +120,7 @@
                     <table class="w-full">
                         <thead>
                             <tr class="border-b-2 border-gray-300">
-                                <th class="text-left py-3 px-4 font-bold text-gray-800">Period</th>
+                                <th class="text-left py-3 px-4 font-bold text-gray-800s">Period</th>
                                 <th class="text-center py-3 px-4 font-bold text-gray-800">Transactions</th>
                                 <th class="text-right py-3 px-4 font-bold text-gray-800">Total Sales</th>
                             </tr>
@@ -132,19 +135,18 @@
                                     @php
                                         $totalTransactions += $data->transactions;
                                         $totalSales += $data->total_sales;
-                                        $average = $data->transactions > 0 ? $data->total_sales / $data->transactions : 0;
                                     @endphp
                                     <tr class="border-b hover:bg-gray-50 transition">
                                         <td class="py-3 px-4 font-medium text-gray-800">
                                             {{ $data->date ?? 'N/A' }}
                                         </td>
                                         <td class="py-3 px-4 text-center text-gray-700">{{ $data->transactions }}</td>
-                                        <td class="py-3 px-4 text-right font-bold text-gray-800">₱{{ number_format($data->total_sales, 2) }}</td>
+                                        <td class="py-3 px-4 text-right font-bold text-gray-800 text-left" >₱{{ number_format($data->total_sales, 2) }}</td>
                                     </tr>
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="4" class="py-8 text-center text-gray-500">No sales data available</td>
+                                    <td colspan="3" class="py-8 text-center text-gray-500">No sales data available</td>
                                 </tr>
                             @endif
                         </tbody>
@@ -162,7 +164,7 @@
             </div>
 
             <!-- Recent Orders Table -->
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-8">
                 <h3 class="text-xl font-bold mb-4 text-gray-800">Recent Completed Orders</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -213,33 +215,50 @@
 
 <script>
     function downloadReport(format) {
+        if (window.downloadInProgress) return;
+        
+        window.downloadInProgress = true;
+        
         // Show loading modal
-        document.getElementById('downloadModal').classList.remove('hidden');
+        const modal = document.getElementById('downloadModal');
+        modal.classList.remove('hidden');
         
-        // Set the format in the hidden input
+        // Set the format and submit
         document.getElementById('downloadFormat').value = format;
-        
-        // Submit the form immediately (no delay needed)
         document.getElementById('downloadForm').submit();
+        
+        // Auto-hide after download starts (this works because download happens in new request)
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            window.downloadInProgress = false;
+        }, 2000);
     }
 
+    // ALWAYS hide modal on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('downloadModal').classList.add('hidden');
+        window.downloadInProgress = false;
+    });
+
+    // Close modal when clicking outside
     document.getElementById('downloadModal').addEventListener('click', function(e) {
         if (e.target === this) {
             this.classList.add('hidden');
+            window.downloadInProgress = false;
         }
     });
-
-    @if(session('download_success'))
-        alert('{{ session('download_success') }}');
-    @endif
-
-    @if(session('download_error'))
-        alert('Error: {{ session('download_error') }}');
-        document.getElementById('downloadModal').classList.add('hidden');
-    @endif
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('downloadModal').classList.add('hidden');
-    });
 </script>
+
+@if(session('download_complete'))
+    <script>
+        alert("{{ session('download_complete') }}");
+    </script>
+@endif
+
+@if(session('download_error'))
+    <script>
+        alert("Error: {{ session('download_error') }}");
+    </script>
+@endif
+
 @endsection

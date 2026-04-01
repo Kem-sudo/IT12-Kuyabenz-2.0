@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.App')
 
 @section('content')
 <div class="w-full h-full flex items-center justify-center p-8 bg-gray-900 min-h-screen">
@@ -8,12 +8,14 @@
             <p class="text-gray-600">Delicious Filipino Cuisine</p>
         </div>
         
+        {{-- Session Error (like too many login attempts) --}}
         @if(session('error'))
             <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                 {{ session('error') }}
             </div>
         @endif
 
+        {{-- Validation Errors --}}
         @if($errors->any())
             <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                 @foreach($errors->all() as $error)

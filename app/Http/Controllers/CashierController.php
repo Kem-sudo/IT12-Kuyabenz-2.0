@@ -13,7 +13,7 @@ class CashierController extends Controller
     public function index()
     {
         $menuItems = MenuItem::all();
-        return view('cashier.pos', compact('menuItems'));
+        return view('Cashier.Pos', compact('menuItems'));
     }
 
    public function processOrder(Request $request)
@@ -23,7 +23,7 @@ class CashierController extends Controller
             'items' => 'required',
             'payment_amount' => 'required|numeric|min:0',
             'order_type' => 'required|in:Dine In,Take Out',
-            'nickname' => 'nullable|string|max:50', // Accept but won't store
+            'nickname' => 'nullable|string|max:50',
         ]);
 
         // Parse the items JSON
@@ -52,24 +52,17 @@ class CashierController extends Controller
             return back()->withErrors(['payment' => 'Insufficient payment amount. Total: ₱' . number_format($total, 2)]);
         }
 
-        // Create order (NO nickname in database)
-        // After creating the order
-$order = Order::create([
-    'order_id' => 'ORD' . Str::random(8),
-    'user_id' => auth()->id(),
-    'total' => $total,
-    'payment_amount' => $request->payment_amount,
-    'change_amount' => $request->payment_amount - $total,
-    'payment_method' => 'Cash',
-    'order_type' => $request->order_type,
-    'status' => 'pending',
-]);
-
-// Save nickname in session temporarily
-if ($request->nickname) {
-    session(["order_nickname_{$order->id}" => $request->nickname]);
-}
-
+        $order = Order::create([
+            'order_id' => 'ORD' . Str::random(8),
+            'user_id' => auth()->id(),
+            'nickname' => $request->nickname ?? null,
+            'total' => $total,
+            'payment_amount' => $request->payment_amount,
+            'change_amount' => $request->payment_amount - $total,
+            'payment_method' => 'Cash',
+            'order_type' => $request->order_type,
+            'status' => 'pending',
+        ]);
 
         // Create order items and update stock
         foreach ($items as $item) {
@@ -104,7 +97,7 @@ public function showReceipt(Order $order, Request $request)
     // Get nickname from URL (temporary)
     $nickname = $request->query('nickname');
     
-    return view('cashier.receipt', [
+    return view('Cashier.receipt', [
         'order' => $order,
         'nickname' => $nickname
     ]);
