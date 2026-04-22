@@ -276,9 +276,9 @@
     }
 
     function renderMenuItem(item) {
-        let imageUrl = item.image_url || '/images/default-food.png';
+        let imageUrl = item.image_url || '/images/Errorimage.jpg';
         
-        if (imageUrl.includes('default-food.png') && item.image) {
+        if (imageUrl.includes('Errorimage.jpg') && item.image) {
             imageUrl = '/storage/' + item.image;
         }
 
@@ -407,7 +407,7 @@
                 // Handle image preview if there's an existing image
                 if (item.image_url) {
                     // Use the full image URL from the backend
-                    const imageUrl = item.image_url.includes('default-food.png') ? '' : item.image_url;
+                    const imageUrl = item.image_url.includes('Errorimage.jpg') ? '' : item.image_url;
                     if (imageUrl) {
                         document.getElementById('imagePreview').src = imageUrl;
                         document.getElementById('imagePreview').classList.remove('hidden');

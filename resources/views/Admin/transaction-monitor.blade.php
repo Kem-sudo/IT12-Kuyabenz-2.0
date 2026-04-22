@@ -27,22 +27,24 @@
                         <span class="live-indicator" style="background-color: white;"></span>
                     @endif
                 </div>
-                <p class="text-4xl font-bold">{{ $activeOrders }}</p>
+                <p class="text-4xl font-bold text-right">{{ $activeOrders }}</p>
+
             </div>
             
             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
                 <h3 class="text-sm font-medium opacity-90 mb-2">Today's Orders</h3>
-                <p class="text-4xl font-bold">{{ $completedToday }}</p>
+<p class="text-4xl font-bold text-right ">{{ $completedToday }}</p>
+    
             </div>
             
             <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
                 <h3 class="text-sm font-medium opacity-90 mb-2">Today's Sales</h3>
-                <p class="text-4xl font-bold">₱{{ number_format($todaySales, 0) }}</p>
+<p class="text-4xl font-bold text-right ">₱{{ number_format($todaySales, 0) }}</p>
             </div>
             
             <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white">
                 <h3 class="text-sm font-medium opacity-90 mb-2">Last 24 Hours</h3>
-                <p class="text-4xl font-bold">{{ $recentOrders->count() }}</p>
+                <p class="text-4xl font-bold text-right ">{{ $recentOrders->count() }}</p>
             </div>
         </div>
         

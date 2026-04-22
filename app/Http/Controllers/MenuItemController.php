@@ -16,7 +16,7 @@ class MenuItemController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -24,22 +24,19 @@ class MenuItemController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->all();
-
-        // Handle image upload
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('menu-items', 'public');
-            $data['image'] = $imagePath;
+            $validated['image'] = $request->file('image')->store('menu-items', 'public');
         }
 
-        MenuItem::create($data);
+        MenuItem::create($validated);
 
-        return redirect()->route('admin.menu')->with('success', 'Menu item created successfully');
+        return redirect()->route('admin.menu')
+            ->with('success', 'Menu item created successfully');
     }
 
     public function update(Request $request, MenuItem $menuItem)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -47,38 +44,48 @@ class MenuItemController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->all();
-
-        // Handle image upload
+        // ✅ handle image update properly
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($menuItem->image) {
+
+            // delete old image
+            if ($menuItem->image && Storage::disk('public')->exists($menuItem->image)) {
                 Storage::disk('public')->delete($menuItem->image);
             }
-            
-            $imagePath = $request->file('image')->store('menu-items', 'public');
-            $data['image'] = $imagePath;
+
+            $validated['image'] = $request->file('image')->store('menu-items', 'public');
+        } else {
+            // keep old image if no new upload
+            $validated['image'] = $menuItem->image;
         }
 
-        $menuItem->update($data);
+        $menuItem->update($validated);
 
-        return redirect()->route('admin.menu')->with('success', 'Menu item updated successfully');
+        return redirect()->route('admin.menu')
+            ->with('success', 'Menu item updated successfully');
     }
 
     public function destroy(MenuItem $menuItem)
     {
-        // Delete image if exists
-        if ($menuItem->image) {
+        if ($menuItem->image && Storage::disk('public')->exists($menuItem->image)) {
             Storage::disk('public')->delete($menuItem->image);
         }
 
         $menuItem->delete();
-        return redirect()->route('admin.menu')->with('success', 'Menu item deleted successfully');
+
+        return redirect()->route('admin.menu')
+            ->with('success', 'Menu item deleted successfully');
     }
 
     public function edit(MenuItem $menuItem)
-    {
-        return response()->json($menuItem);
-    }
-
+{
+    return response()->json([
+        'id' => $menuItem->id,
+        'name' => $menuItem->name,
+        'category' => $menuItem->category,
+        'price' => $menuItem->price,
+        'stock' => $menuItem->stock,
+        'image' => $menuItem->image,
+        'image_url' => $menuItem->image ? asset('storage/' . $menuItem->image) : null,
+    ]);
+  }
 }

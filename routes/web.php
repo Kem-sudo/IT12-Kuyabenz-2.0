@@ -20,7 +20,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/transactions', [AdminController::class, 'transactionMonitor'])->name('admin.transactions');
         Route::get('/sales', [AdminController::class, 'salesReport'])->name('admin.sales');
-        Route::post('/sales/download', [AdminController::class, 'downloadSalesReport'])->name('admin.sales.download'); // Add this line
+        Route::post('/sales/download', [AdminController::class, 'downloadSalesReport'])->name('admin.sales.download');
+        
+        // Add real-time sales data route
+        Route::get('/sales/realtime', [AdminController::class, 'getRealTimeSales'])->name('admin.sales.realtime');
+        
         Route::get('/users', [UserController::class, 'index'])->name('admin.users');
         Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
         Route::post('/users/{user}/change-password', [UserController::class, 'updatePassword'])->name('admin.users.change-password');
@@ -30,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/menu', [MenuItemController::class, 'store'])->name('admin.menu.store');
         Route::put('/menu/{menuItem}', [MenuItemController::class, 'update'])->name('admin.menu.update');
         Route::delete('/menu/{menuItem}', [MenuItemController::class, 'destroy'])->name('admin.menu.destroy');
+        Route::get('/menu/{menuItem}/edit', [MenuItemController::class, 'edit'])->name('admin.menu.edit');
     });
 
     // Cashier Routes
@@ -45,14 +50,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/orders/{order}/start', [KitchenController::class, 'startPreparing'])->name('kitchen.start-preparing');
         Route::post('/orders/{order}/complete', [KitchenController::class, 'completeOrder'])->name('kitchen.complete-order');
     });
-
-    
-
-    // Edit
-Route::get('/admin/menu/{menuItem}/edit', [MenuItemController::class, 'edit'])->name('admin.menu.edit');
-
 });
-
-
 
 Route::redirect('/', '/login');

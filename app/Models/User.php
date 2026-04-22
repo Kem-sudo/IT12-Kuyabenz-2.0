@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -26,7 +27,6 @@ class User extends Authenticatable
         parent::boot();
 
         static::created(function ($user) {
-            // Check if this is the first user and make them admin
             if (User::count() === 1) {
                 $user->update(['role' => 'admin']);
             }
@@ -38,7 +38,6 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    // Static method to get or create admin
     public static function getAdminUser()
     {
         $admin = static::where('role', 'admin')->first();
@@ -46,7 +45,7 @@ class User extends Authenticatable
         if (!$admin) {
             $admin = static::create([
                 'username' => 'admin',
-                'password' => 'admin123',
+                'password' => Hash::make('admin123'),
                 'role' => 'admin',
             ]);
         }

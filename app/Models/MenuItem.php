@@ -30,13 +30,13 @@ class MenuItem extends Model
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('images/default-food.png');
+            return '/images/Errorimage.jpg';
         }
 
         if (Storage::disk('public')->exists($this->image)) {
-            return Storage::url($this->image);
+            return '/storage/' . $this->image;
         }
 
-        return asset('images/default-food.png');
+        return '/images/Errorimage.jpg';
     }
 }

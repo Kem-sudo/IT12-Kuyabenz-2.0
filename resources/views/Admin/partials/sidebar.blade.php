@@ -32,8 +32,8 @@
     </div>
     <form method="POST" action="{{ route('logout') }}">
         @csrf
-        <button type="submit" class="w-full bg-white text-center py-3 rounded-lg font-semibold hover:bg-opacity-90 transition" style="color: #dc2626;">
-            Logout
-        </button>
+        <button type="submit" class="w-full bg-gray-700 text-center py-3 rounded-lg font-semibold hover:bg-gray-600 transition text-white">
+                    Logout
+                </button>
     </form>
 </div>
