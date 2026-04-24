@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Services\AuditLogger;
 
 class UserController extends Controller
 {
@@ -22,11 +23,16 @@ class UserController extends Controller
             'role' => 'required|in:admin,cashier,kitchen',
         ]);
 
-        User::create([
+        $user = User::create([
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
+
+        AuditLogger::log('admin.user.created', [
+            'username' => $user->username,
+            'role' => $user->role,
+        ], $request, User::class, $user->id);
 
         return redirect()->route('admin.users')->with('success', 'User created successfully');
     }
@@ -42,6 +48,10 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        AuditLogger::log('admin.user.password_updated', [
+            'username' => $user->username,
+        ], $request, User::class, $user->id);
+
         return redirect()->route('admin.users')->with('success', 'Password updated successfully for ' . $user->username);
     }
 
@@ -52,7 +62,13 @@ class UserController extends Controller
             return redirect()->route('admin.users')->with('error', 'Cannot delete your own account');
         }
 
+        $snapshot = $user->only(['id', 'username', 'role']);
         $user->delete();
+
+        AuditLogger::log('admin.user.deleted', [
+            'user' => $snapshot,
+        ], request(), User::class, $snapshot['id'] ?? null);
+
         return redirect()->route('admin.users')->with('success', 'User deleted successfully');
     }
 }

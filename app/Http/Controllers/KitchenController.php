@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Services\AuditLogger;
 
 class KitchenController extends Controller
 {
@@ -27,13 +28,29 @@ class KitchenController extends Controller
 
     public function startPreparing(Order $order)
     {
+        $before = $order->status;
         $order->update(['status' => 'preparing']);
+
+        AuditLogger::log('kitchen.order.status_changed', [
+            'order_id' => $order->order_id,
+            'from' => $before,
+            'to' => 'preparing',
+        ], request(), Order::class, $order->id);
+
         return redirect()->route('kitchen.display')->with('success', 'Order started preparing');
     }
 
     public function completeOrder(Order $order)
     {
+        $before = $order->status;
         $order->update(['status' => 'completed']);
+
+        AuditLogger::log('kitchen.order.status_changed', [
+            'order_id' => $order->order_id,
+            'from' => $before,
+            'to' => 'completed',
+        ], request(), Order::class, $order->id);
+
         return redirect()->route('kitchen.display')->with('success', 'Order completed');
     }
 }

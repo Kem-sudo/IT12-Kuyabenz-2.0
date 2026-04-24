@@ -23,6 +23,10 @@
     <a href="{{ route('admin.users') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-white hover:bg-opacity-10">
         <span>Staff</span>
     </a>
+
+    <a href="{{ route('admin.audit-logs') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-white hover:bg-opacity-10">
+        <span>Audit Logs</span>
+    </a>
 </nav>
 
 <div class="p-4 border-t border-white border-opacity-20">

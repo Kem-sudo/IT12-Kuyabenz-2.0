@@ -3,52 +3,69 @@
 @section('content')
 <div class="w-full h-full flex" style="min-height: 100vh;">
     <!-- Sidebar -->
-    <div class="w-64 bg-gray-800 text-white shadow-lg flex flex-col h-screen sticky top-0 overflow-y-auto">
-        <div class="p-6 border-b border-gray-700">
-            <h1 class="text-2xl font-bold mb-1">Kuya Benz</h1>
-            <p class="text-sm text-gray-300">Admin Panel</p>
-        </div>
-        
-        <nav class="flex-1 p-4">
-            <a href="{{ route('admin.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-gray-700">
-                <span class="text-lg"></span>
-                <span>Dashboard</span>
-            </a>
-            
-            <a href="{{ route('admin.transactions') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-gray-700">
-                <span class="text-lg"></span>
-                <span>Live Monitor</span>
-            </a>
-            
-            <a href="{{ route('admin.menu') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition bg-gray-700 font-bold">
-                <span class="text-lg"></span>
-                <span>Menu</span>
-            </a>
-            
-            <a href="{{ route('admin.sales') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-gray-700">
-                <span class="text-lg"></span>
-                <span>Sales Report</span>
-            </a>
-            
-            <a href="{{ route('admin.users') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition hover:bg-gray-700">
-                <span class="text-lg"></span>
-                <span>Staff</span>
-            </a>
-        </nav>
-        
-        <div class="p-4 border-t border-gray-700">
-            <div class="mb-4 p-3 bg-gray-700 rounded-lg">
-                <p class="text-xs text-gray-300 mb-1">Logged in as</p>
-                <p class="font-bold">{{ auth()->user()->username }}</p>
-            </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full bg-gray-700 text-center py-3 rounded-lg font-semibold hover:bg-gray-600 transition text-white">
-                    Logout
-                </button>
-            </form>
-        </div>
+    <!-- Sidebar -->
+<div class="w-64 bg-gray-800 text-white shadow-lg flex flex-col h-screen sticky top-0">
+
+    <!-- Header -->
+    <div class="p-6 border-b border-gray-700 flex-shrink-0">
+        <h1 class="text-2xl font-bold mb-1">Kuya Benz</h1>
+        <p class="text-sm text-gray-300">Admin Panel</p>
     </div>
+
+    <!-- Menu (scroll only if needed) -->
+    <nav class="flex-1 p-4 overflow-y-auto">
+
+        <a href="{{ route('admin.dashboard') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 hover:bg-gray-700 transition">
+            Dashboard
+        </a>
+
+        <a href="{{ route('admin.transactions') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 hover:bg-gray-700 transition">
+            Live Monitor
+        </a>
+
+        <a href="{{ route('admin.menu') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 bg-gray-700 font-bold">
+            Menu
+        </a>
+
+        <a href="{{ route('admin.sales') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 hover:bg-gray-700 transition">
+            Sales Report
+        </a>
+
+        <a href="{{ route('admin.users') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 hover:bg-gray-700 transition">
+            Staff
+        </a>
+
+        <a href="{{ route('admin.audit-logs') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 hover:bg-gray-700 transition">
+            Audit Logs
+        </a>
+
+    </nav>
+
+    <!-- Footer (LOCKED - ALWAYS VISIBLE) -->
+    <div class="p-4 border-t border-gray-700 flex-shrink-0">
+
+        <div class="mb-4 p-3 bg-gray-700 rounded-lg">
+            <p class="text-xs text-gray-300 mb-1">Logged in as</p>
+            <p class="font-bold">{{ auth()->user()->username }}</p>
+        </div>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                class="w-full bg-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-600 transition">
+                Logout
+            </button>
+        </form>
+
+    </div>
+
+</div>
     
     <!-- Main Content -->
     <div class="flex-1 bg-gray-50">

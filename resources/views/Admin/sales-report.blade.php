@@ -38,6 +38,11 @@
                class="block px-4 py-3 rounded-lg mb-2 hover:bg-gray-700 transition">
                 Staff
             </a>
+
+            <a href="{{ route('admin.audit-logs') }}"
+               class="block px-4 py-3 rounded-lg mb-2 hover:bg-gray-700 transition">
+                Audit Logs
+            </a>
         </nav>
 
         <!-- Logout Always Visible -->

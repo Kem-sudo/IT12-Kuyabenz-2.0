@@ -6,6 +6,7 @@ use App\Http\Controllers\CashierController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MenuItemController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +50,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/menu/{menuItem}', [MenuItemController::class, 'update'])->name('admin.menu.update');
         Route::delete('/menu/{menuItem}', [MenuItemController::class, 'destroy'])->name('admin.menu.destroy');
         Route::get('/menu/{menuItem}/edit', [MenuItemController::class, 'edit'])->name('admin.menu.edit');
+
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs');
     });
 
 

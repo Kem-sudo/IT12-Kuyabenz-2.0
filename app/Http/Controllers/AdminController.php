@@ -8,6 +8,7 @@ use App\Models\MenuItem;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\AuditLogger;
 
 
 class AdminController extends Controller
@@ -90,6 +91,11 @@ class AdminController extends Controller
     ->groupBy('date')
     ->orderBy('date', 'desc')
     ->get();
+
+    AuditLogger::log('admin.sales_report.viewed', [
+        'from' => $from,
+        'to' => $to,
+    ], $request);
 
     return view('admin.sales-report', compact(
         'orders',
@@ -250,6 +256,13 @@ class AdminController extends Controller
         'reportDate' => now(),
         'generatedBy' => auth()->user()->username,
     ];
+
+    AuditLogger::log('admin.sales_report.downloaded', [
+        'from' => $from,
+        'to' => $to,
+        'orders_count' => $orders->count(),
+        'total_sales' => (float) $orders->sum('total'),
+    ], $request);
 
     $pdf = Pdf::loadView('admin.reports.sales-pdf', $data)
         ->setPaper('A4', 'portrait');

@@ -39,21 +39,38 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
                 @foreach($menuItems as $item)
-                <div onclick="addToOrder({{ $item->id }}, '{{ $item->name }}', {{ $item->price }})"
-                     class="bg-white rounded-xl shadow hover:shadow-lg cursor-pointer p-4">
 
-                    <img src="{{ $item->image ? asset('storage/'.$item->image) : asset('images/Errorimage.jpg') }}"
-                         class="w-full h-28 object-cover rounded-lg mb-3">
+@php
+    $isUnavailable = $item->stock <= 0;
+@endphp
 
-                    <h3 class="font-bold">{{ $item->name }}</h3>
-                    <p class="text-sm text-gray-500">{{ $item->category }}</p>
+<div
+    class="bg-white rounded-xl shadow p-4 transition
+    {{ $isUnavailable ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg cursor-pointer' }}"
+    @if(!$isUnavailable)
+        onclick="addToOrder({{ $item->id }}, '{{ $item->name }}', {{ $item->price }})"
+    @endif
+>
 
-                    <div class="flex justify-between mt-2">
-                        <span class="font-bold">₱{{ number_format($item->price,2) }}</span>
-                        <span class="text-sm text-gray-500">Stock: {{ $item->stock }}</span>
-                    </div>
-                </div>
-                @endforeach
+    <img src="{{ $item->image ? asset('storage/'.$item->image) : asset('images/Errorimage.jpg') }}"
+         class="w-full h-28 object-cover rounded-lg mb-3">
+
+    <h3 class="font-bold">{{ $item->name }}</h3>
+    <p class="text-sm text-gray-500">{{ $item->category }}</p>
+
+    <div class="flex justify-between mt-2">
+        <span class="font-bold">₱{{ number_format($item->price,2) }}</span>
+
+        @if($isUnavailable)
+            <span class="text-sm text-red-600 font-semibold">Unavailable</span>
+        @else
+            <span class="text-sm text-gray-500">Servings: {{ $item->stock }}</span>
+        @endif
+    </div>
+
+</div>
+
+@endforeach
 
             </div>
         </div>
@@ -94,7 +111,12 @@
             <input type="number"
                    id="payment"
                    placeholder="Cash Amount"
-                   class="w-full border px-4 py-3 rounded-lg mb-4">
+                   class="w-full border px-4 py-3 rounded-lg mb-2"
+                   min="0"
+                   step="0.01"
+                   oninput="updatePaymentStatus()">
+
+            <div id="paymentStatus" class="text-sm font-semibold mb-4 hidden"></div>
 
             <form method="POST" action="{{ route('cashier.process-order') }}" id="orderForm">
                 @csrf
@@ -161,6 +183,7 @@
 
 let order = [];
 let pendingRemoveIndex = null;
+let currentTotal = 0;
 
 /* ADD ITEM */
 function addToOrder(id,name,price)
@@ -203,6 +226,8 @@ function renderOrder()
     if(order.length === 0){
         box.innerHTML = '<p class="text-center text-gray-500">No items</p>';
         document.getElementById('totalText').innerText = '₱0.00';
+        currentTotal = 0;
+        updatePaymentStatus();
         return;
     }
 
@@ -244,6 +269,32 @@ function renderOrder()
     });
 
     document.getElementById('totalText').innerText = '₱' + total.toFixed(2);
+    currentTotal = total;
+    updatePaymentStatus();
+}
+
+function updatePaymentStatus()
+{
+    const statusEl = document.getElementById('paymentStatus');
+    const payment = parseFloat(document.getElementById('payment').value) || 0;
+    const diff = payment - currentTotal;
+
+    if (currentTotal <= 0) {
+        statusEl.classList.add('hidden');
+        statusEl.textContent = '';
+        return;
+    }
+
+    statusEl.classList.remove('hidden');
+
+    if (diff < 0) {
+        statusEl.className = 'text-sm font-semibold mb-4 text-red-600';
+        statusEl.textContent = `Please add ₱${Math.abs(diff).toFixed(2)}.`;
+        return;
+    }
+
+    statusEl.className = 'text-sm font-semibold mb-4 text-green-700';
+    statusEl.textContent = `Change: ₱${diff.toFixed(2)}`;
 }
 
 /* REQUEST REMOVE */
@@ -304,6 +355,18 @@ function approveRemove(event)
 /* SUBMIT ORDER */
 function submitOrder()
 {
+    updatePaymentStatus();
+    const payment = parseFloat(document.getElementById('payment').value) || 0;
+
+    if (order.length === 0) {
+        alert('No items in order');
+        return;
+    }
+
+    if (payment < currentTotal) {
+        return;
+    }
+
     document.getElementById('itemsInput').value = JSON.stringify(order);
     document.getElementById('paymentInput').value = document.getElementById('payment').value;
     document.getElementById('nicknameInput').value = document.getElementById('nickname').value;

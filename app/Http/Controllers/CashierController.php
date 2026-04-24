@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use App\Services\AuditLogger;
 
 class CashierController extends Controller
 {
@@ -89,6 +90,17 @@ class CashierController extends Controller
 
                 $menuItem->decrement('stock', $item['quantity']);
             }
+
+            AuditLogger::log('cashier.order.created', [
+                'order_id' => $order->order_id,
+                'db_id' => $order->id,
+                'total' => $order->total,
+                'payment_amount' => $order->payment_amount,
+                'change_amount' => $order->change_amount,
+                'order_type' => $order->order_type,
+                'nickname' => $order->nickname,
+                'items_count' => count($items),
+            ], $request, Order::class, $order->id);
 
             return redirect()->route('cashier.receipt', [
                 'order' => $order->id,
