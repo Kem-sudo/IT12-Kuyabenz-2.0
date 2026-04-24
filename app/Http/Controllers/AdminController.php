@@ -213,16 +213,39 @@ class AdminController extends Controller
 
     public function downloadSalesReport(Request $request)
 {
-    $filter = $request->get('filter', 'daily');
-    $selectedDate = $request->get('selected_date');
+    $from = $request->from;
+    $to = $request->to;
 
-    $salesData = $this->getSalesData($filter, $selectedDate);
-    $orders = $this->getOrders($selectedDate);
+    $selectedDate = null; // FIX undefined variable
+
+    $query = Order::with(['user', 'orderItems'])
+        ->where('status', 'completed');
+
+    if ($from) {
+        $query->whereDate('created_at', '>=', $from);
+    }
+
+    if ($to) {
+        $query->whereDate('created_at', '<=', $to);
+    }
+
+    $orders = $query->latest()->get();
+
+    $salesData = (clone $query)
+        ->selectRaw("
+            DATE(created_at) as date,
+            COUNT(*) as transactions,
+            SUM(total) as total_sales
+        ")
+        ->groupBy('date')
+        ->orderBy('date', 'desc')
+        ->get();
 
     $data = [
         'salesData' => $salesData,
         'orders' => $orders,
-        'filter' => $filter,
+        'from' => $from,
+        'to' => $to,
         'selectedDate' => $selectedDate,
         'reportDate' => now(),
         'generatedBy' => auth()->user()->username,
